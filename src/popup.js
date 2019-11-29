@@ -3,13 +3,15 @@
 (function () {
     let el_start = document.getElementById('start'),
         el_stop  = document.getElementById('stop'),
-        el_count  = document.getElementById('count');
+        el_count  = document.getElementById('count'),
+        el_units  = document.getElementById('units');
 
     function toggle(data) {
         if (data) {
             el_start.classList.add('d-none');
             el_stop.classList.remove('d-none');
-            el_count.value = data.ttl / 60000;
+            el_count.value = data.count;
+            el_units.value = data.units;
         } else {
             el_stop.classList.add('d-none');
             el_start.classList.remove('d-none');
@@ -24,15 +26,16 @@
     }
 
     function start(tab) {
-        let val = parseInt(el_count.value);
-        if (val > 0) {
-            let ttl = val * 60 * 1000;
+        let count = parseInt(el_count.value);
+        if (count > 0) {
+            let units = el_units.options[el_units.options.selectedIndex].value;
             chrome.runtime.sendMessage({
                 command: "refresh.start",
                 tabId: tab.id,
-                ttl,
+                count,
+                units,
             });
-            toggle({ttl});
+            toggle({count, units});
         }
     }
 

@@ -23,11 +23,13 @@ chrome.runtime.onMessage.addListener(function (request) {
         return;
     }
     if (request.command === 'refresh.start') {
+        let ttl = request.count * 1000 * (request.units === 'min' ? 60 : 1);
         storage.get(`${request.tabId}`)
             .then(handler => handler ? clearInterval(handler) : undefined)
             .then(() => storage.enable(`${request.tabId}`, {
-                handler: setInterval(() => chrome.tabs.reload(request.tabId), request.ttl),
-                ttl: request.ttl,
+                handler: setInterval(() => chrome.tabs.reload(request.tabId), ttl),
+                count: request.count,
+                units: request.units,
             }))
             .then(() => setIcon(request.tabId, active));
     } else if (request.command === 'refresh.stop') {
